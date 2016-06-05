@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 import mithr.ems.handler.Registerer;
 import mithr.ems.handler.exception.NoSuchEventException;
+import mithr.ems.handler.exception.NoSuchRegistrationException;
 import mithr.ems.model.Participant;
 
 public class RegistrationDriver extends DriverImpl {
@@ -31,89 +32,90 @@ public class RegistrationDriver extends DriverImpl {
 	}
 
 	@Override
-	public void takeOver(final Driver previousDriver) {
-		try {
-			switch (getActionKey()) {
-			case NEW_REGISTRATION_KEY:
-				newRegistrationAction(previousDriver);
-				break;
-			case MAKE_ATTENDANCE_KEY:
-				makeAttendanceAction(previousDriver);
-				break;
-			case RETURN_KEY:
-				if (previousDriver != null) {
-					previousDriver.takeOver(this);
-				} else {
+	public void takeOver() {
+		boolean startOver = true;
+		try{
+			while (startOver) {
+				switch (getActionKey()) {
+				case NEW_REGISTRATION_KEY:
+					newRegistrationAction();
+					break;
+				case MAKE_ATTENDANCE_KEY:
+					makeAttendanceAction();
+					break;
+				case RETURN_KEY:
+					startOver = false;
+					break;
+				case QUIT_KEY:
+					startOver = false;
+					inputScanner.close();
 					System.exit(0);
+					break;
+				default:
+					System.out.println("[ERROR] Please select a proper action :");
 				}
-				break;
-			case QUIT_KEY:
-				System.exit(0);
-				break;
-			default:
-				System.out.println("Please select a proper action :");
-				takeOver(previousDriver);
 			}
 		} catch (IOException e) {
-			System.out.println("Some error occured please try again. :(");
-			takeOver(previousDriver);
+			System.out.println("[ERROR] Some error occured please try again. :(");
 		}
 
 	}
 
 	private int getActionKey() {
-	
-		System.out.println("=================================");
+
+		System.out.println("");
 		System.out.println("Please input :");
 		System.out.println(NEW_REGISTRATION_KEY + " for new Registration");
 		System.out.println(MAKE_ATTENDANCE_KEY + " to mark attendance");
 		System.out.println(RETURN_KEY + " to return to previous menu:");
 		System.out.println(QUIT_KEY + " to quit:");
-		System.out.println("=================================");
+		System.out.println("");
+		System.out.print("ems:> ");
 
 		int actionKey = -1;
 		try {
 			actionKey = Integer.parseInt(inputScanner.readLine());
 		} catch (NumberFormatException | IOException e) {
-			System.out.println("Some error occured please try again. :(");
+			System.out.println("[ERROR] Some error occured please try again. :(");
 		}
 		return actionKey;
 	}
 
-	private void newRegistrationAction(final Driver previousDriver) throws IOException {
-		System.out.println("Please enter event Name, you want to register for:).");
-		String eventName = inputScanner.readLine();
-		
-		System.out.println("Please enter Participant Name:");
-		String participantName = inputScanner.readLine();
-		
+	private void newRegistrationAction() throws IOException {
+		System.out.print("Please enter Participant Name: ");
+		final String participantName = inputScanner.readLine();
+
+		System.out.print("Please enter event Name, you want to register for: ");
+		final String eventName = inputScanner.readLine();
+
 		try {
-			registerer.makeRegistration(eventName, new Participant(participantName));
+			registerer.makeRegistration(eventName.toUpperCase(), new Participant(participantName.toUpperCase()));
+			System.out.println("[SUCCESS] Registration is successful.");
+			printSomeSapce();
 		} catch (NoSuchEventException e) {
-			System.out.println("There is no such event named "+eventName+". Please try again with different event");
-			this.takeOver(previousDriver);
+			System.out.println(
+					"[ERROR] There is no such event named " + eventName + ". Please try again with different event");
 		}
-		System.out.println("Registration is successful.");
-		printSomeSapce();
-		this.takeOver(previousDriver);
-		
+
 	}
 
-	private void makeAttendanceAction(final Driver previousDriver) throws IOException {
-		System.out.println("Please enter event Name, you want to make attendance:).");
-		String eventName = inputScanner.readLine();
-		
-		System.out.println("Please enter Participant Name:).");
-		String participantName = inputScanner.readLine();
-		
+	private void makeAttendanceAction() throws IOException {
+		System.out.print("Please enter Participant Name: ");
+		final String participantName = inputScanner.readLine();
+
+		System.out.print("Please enter event Name, you want to make attendance: ");
+		final String eventName = inputScanner.readLine();
+
 		try {
-			registerer.markAttendance(eventName, new Participant(participantName));
+			registerer.markAttendance(eventName.toUpperCase(), new Participant(participantName.toUpperCase()));
+			System.out.println("[SUCCESS] Attendance is successful.");
+			printSomeSapce();
 		} catch (NoSuchEventException e) {
-			System.out.println("There is no such event named "+eventName+". Please try again with different event");
-			this.takeOver(previousDriver);
+			System.out.println(
+					"[ERROR] There is no such event named " + eventName + ". Please try again with different event");
+		} catch (NoSuchRegistrationException e) {
+			System.out.println("[ERROR] " + participantName + " is not registered for " + eventName);
 		}
-		System.out.println("Attendance is successful.");
-		printSomeSapce();
-		this.takeOver(previousDriver);
+
 	}
 }

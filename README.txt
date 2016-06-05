@@ -1,7 +1,10 @@
 Gradle is used as build system.
 SPOCK testing framework for unit testing.
 Groovy and Java used when writing test script.
-Event name and participants name are case-sensitive
+
+Event name and participants name are not case-sensitive and will be converted tp uppercase upon creation
+I do no override equals and hashcode for Event model as it is not required yet.
+ 
 
 
 

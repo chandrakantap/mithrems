@@ -19,7 +19,7 @@ class EventStoreSpec extends Specification {
 		eventStoreTwo == eventStoreThree
 	}
 
-	def "Must store and event"(){
+	def "Must store an event"(){
 		given:" An event"
 		Event sampleEvent = Mock(Event)
 
@@ -31,7 +31,7 @@ class EventStoreSpec extends Specification {
 		eventStore.getEventList().size() == old(eventStore.getEventCount()) +1
 	}
 
-	def "Must delete and event"(){
+	def "Must delete an event"(){
 		given:" Two event and we store them to EventStore"
 		Event sampleEventOne = Mock(Event)
 		Event sampleEventTwo = Mock(Event)
@@ -80,5 +80,17 @@ class EventStoreSpec extends Specification {
 
 		then:" it must return true"
 		isEventExist
+	}
+	
+	def "Must tell if and event object do not exist by name"(){
+		
+		given:"There was no event stored named BLIND DATING"		
+
+		when:" we try to check if an event exist with the name BLIND DATING"
+		boolean  isEventExist= eventStore.hasEvent("BLIND DATING")
+
+
+		then:" it must return false"
+		isEventExist==false
 	}
 }

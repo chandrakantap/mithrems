@@ -13,7 +13,7 @@ public class Event {
 	private Date eventDate;
 	
 	public Event(final String eventName,final Date eventDate){
-		this.eventName=eventName;
+		this.eventName= eventName;
 		this.eventDate=eventDate;
 	}
 	

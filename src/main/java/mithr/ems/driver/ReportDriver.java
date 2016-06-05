@@ -32,62 +32,63 @@ public class ReportDriver extends DriverImpl {
 	}
 
 	@Override
-	public void takeOver(final Driver previousDriver) {
+	public void takeOver() {
+		boolean startOver = true;
 		try {
-			switch (getActionKey()) {
-			case GET_PARTICIPANT_KEY:
-				getParticipantAction(previousDriver);
-				break;
-			case GET_ATTENDANCE_KEY:
-				getAttendanceAction(previousDriver);
-				break;
-			case RETURN_KEY:
-				if (previousDriver != null) {
-					previousDriver.takeOver(this);
-				} else {
+			while (startOver) {
+				switch (getActionKey()) {
+				case GET_PARTICIPANT_KEY:
+					getParticipantAction();
+					break;
+				case GET_ATTENDANCE_KEY:
+					getAttendanceAction();
+					break;
+				case RETURN_KEY:
+					startOver = false;
+					break;
+				case QUIT_KEY:
+					startOver = false;
+					inputScanner.close();
 					System.exit(0);
+					break;
+				default:
+					System.out.println("[ERROR] Please select a proper action :");
 				}
-				break;
-			case QUIT_KEY:
-				System.exit(0);
-				break;
-			default:
-				System.out.println("Please select a proper action :");
-				takeOver(previousDriver);
+
 			}
 		} catch (IOException e) {
-			System.out.println("Some error occured please try again. :(");
-			takeOver(previousDriver);
+			System.out.println("[ERROR] Some error occured please try again. :(");
 		}
 
 	}
 
 	private int getActionKey() {
-	
-		System.out.println("=================================");
+
+		System.out.println("");
 		System.out.println("Please input :");
 		System.out.println(GET_PARTICIPANT_KEY + " to get participant list");
 		System.out.println(GET_ATTENDANCE_KEY + " to get attendance");
 		System.out.println(RETURN_KEY + " to return to previous menu:");
 		System.out.println(QUIT_KEY + " to quit:");
-		System.out.println("=================================");
+		System.out.println("");
+		System.out.print("ems:> ");
 
 		int actionKey = -1;
 		try {
 			actionKey = Integer.parseInt(inputScanner.readLine());
 		} catch (NumberFormatException | IOException e) {
-			System.out.println("Some error occured please try again. :(");
+			System.out.println("[ERROR] Some error occured please try again. :(");
 		}
 		return actionKey;
 	}
 
-	private void getParticipantAction(final Driver previousDriver) throws IOException {
-		System.out.println("Please enter event Name, you want to check participation:).");
-		String eventName = inputScanner.readLine();
+	private void getParticipantAction() throws IOException {
+		System.out.print("Please enter event Name, you want to check participation. ");
+		final String eventName = inputScanner.readLine();
 
-		final List<Participant> participantList = registerer.getParticipantList(eventName);
+		final List<Participant> participantList = registerer.getParticipantList(eventName.toUpperCase());
 
-		if (participantList!=null && participantList.size() > 0) {
+		if (participantList != null && participantList.size() > 0) {
 			for (Participant participant : participantList) {
 				System.out.println(participant);
 			}
@@ -95,16 +96,15 @@ public class ReportDriver extends DriverImpl {
 			System.out.println("There is no participant for the event " + eventName);
 		}
 		printSomeSapce();
-		this.takeOver(previousDriver);
 	}
 
-	private void getAttendanceAction(final Driver previousDriver) throws IOException {
-		System.out.println("Please enter event Name, you want to check Attendance:).");
-		String eventName = inputScanner.readLine();
+	private void getAttendanceAction() throws IOException {
+		System.out.print("Please enter event Name, you want to check Attendance. ");
+		final String eventName = inputScanner.readLine();
 
-		final List<Participant> attendeanceList = registerer.getAttendeeList(eventName);
+		final List<Participant> attendeanceList = registerer.getAttendeeList(eventName.toUpperCase());
 
-		if (attendeanceList!=null && attendeanceList.size() > 0) {
+		if (attendeanceList != null && attendeanceList.size() > 0) {
 			for (Participant participant : attendeanceList) {
 				System.out.println(participant);
 			}
@@ -112,6 +112,5 @@ public class ReportDriver extends DriverImpl {
 			System.out.println("No one attended the event " + eventName);
 		}
 		printSomeSapce();
-		this.takeOver(previousDriver);
 	}
 }

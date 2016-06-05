@@ -6,5 +6,5 @@ package mithr.ems.driver;
  *
  */
 public interface Driver {
-	public void takeOver(Driver previousDriver);
+	public void takeOver();
 }

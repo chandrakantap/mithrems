@@ -29,4 +29,14 @@ class ParticipantSpec extends Specification {
 		then: " it should return Participant Name"
 		participantName.equals(participantToString)
 	}
+	
+	def "Participation name are same then they are equal"(){
+		
+		when:" Two Participant have same Name"
+		Participant participantOne = new Participant("Dario naharis");
+		Participant participantTwo = new Participant("Dario naharis");
+		
+		then:" They must be equal"
+		participantOne.equals(participantTwo)==true
+	}
 }

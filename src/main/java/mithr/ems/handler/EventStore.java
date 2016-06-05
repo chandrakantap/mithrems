@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import mithr.ems.handler.exception.NoSuchEventException;
 import mithr.ems.model.Event;
 
 public class EventStore {
@@ -27,11 +28,16 @@ public class EventStore {
 		this.eventDataStore.put(event.getName(), event);
 	}
 
-	public void deleteEvent(final String eventName) {
+	public void deleteEvent(final String eventName) throws NoSuchEventException {		
+		if(this.hasEvent(eventName)){
 		this.eventDataStore.remove(eventName);
+		}else{
+			throw new NoSuchEventException("No such event exist named "+eventName);
+		}
 	}
 
 	public Event getEvent(final String eventName) {
+		
 		return eventDataStore.get(eventName);
 	}
 
@@ -40,6 +46,7 @@ public class EventStore {
 	}
 
 	public boolean hasEvent(final String eventName) {
+		
 		return this.eventDataStore.containsKey(eventName);
 	}
 

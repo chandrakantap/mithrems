@@ -1,7 +1,9 @@
 package mithr.ems.handler
 
-import mithr.ems.handler.exception.NoSuchEventException;
-import mithr.ems.model.Event
+import java.awt.image.SampleModel;
+
+import mithr.ems.handler.exception.NoSuchEventException
+import mithr.ems.handler.exception.NoSuchRegistrationException
 import mithr.ems.model.Participant
 import spock.lang.Specification
 
@@ -25,9 +27,6 @@ class RegistererSpec extends Specification{
 	def " must be able to do registration"(){
 		given:" An even and a particiapant"
 		final Participant sampleParticipant = Mock(Participant)
-		final EventStore eventStore = Mock(EventStore)
-		registerer.setEventStore(eventStore)
-
 		final String eventName = "ROYAL MARRIAGE"
 
 		eventStore.hasEvent(eventName) >> true
@@ -42,8 +41,6 @@ class RegistererSpec extends Specification{
 	def " must throw exception when trying to registration with invalid event"(){
 		given:" An invalid event and a particiapant"
 		final Participant sampleParticipant = Mock(Participant)
-		final EventStore eventStore = Mock(EventStore)
-		registerer.setEventStore(eventStore)
 
 		final String eventName = "ROYAL MARRIAGE"
 
@@ -59,14 +56,13 @@ class RegistererSpec extends Specification{
 	}
 
 	def " must be able to make attendance"(){
-		given:" An even and a particiapant"
+		given:" An event and a registered particiapant "
 		final Participant sampleParticipant = Mock(Participant)
-		final EventStore eventStore = Mock(EventStore)
-		registerer.setEventStore(eventStore)
 
 		final String eventName = "ROYAL MARRIAGE"
 
 		eventStore.hasEvent(eventName) >> true
+		registerer.makeRegistration(eventName,sampleParticipant);
 
 		when:" we will try to make attendance of the participant for the event"
 		registerer.markAttendance(eventName,sampleParticipant)
@@ -78,9 +74,6 @@ class RegistererSpec extends Specification{
 	def " must throw exception when trying make attendance with invalid event"(){
 		given:" An invalid event and a particiapant"
 		final Participant sampleParticipant = Mock(Participant)
-		final EventStore eventStore = Mock(EventStore)
-		registerer.setEventStore(eventStore)
-
 		final String eventName = "ROYAL MARRIAGE"
 
 		// an invalid event
@@ -93,4 +86,21 @@ class RegistererSpec extends Specification{
 		thrown NoSuchEventException
 
 	}
+	
+	def " must throw exception when trying make attendance with Participant not registered"(){
+		given:" an valid event and a particiapant"
+		final Participant sampleParticipant = Mock(Participant)
+		final String eventName = "ROYAL MARRIAGE"
+
+		// a valid event
+		eventStore.hasEvent(eventName) >> true
+
+		when:" we will try to make registration of the participant for the event"
+		registerer.markAttendance(eventName,sampleParticipant)
+
+		then:" it should throw NoSuchRegistrationException"
+		thrown NoSuchRegistrationException
+
+	}
+	
 }

@@ -16,13 +16,19 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		
+		System.out.println("");
+		System.out.println("MITHR Event Management System");
+		System.out.println("");
+		System.out.println("                            v 1.1");
+		System.out.println("");
+		
 		final Registerer registerer = Registerer.createInstance(EventStore.getInstance());
 
 		final EventStoreDriver eventStoreDriver = EventStoreDriver.createInstance(EventStore.getInstance());
 		final RegistrationDriver registrationDriver = RegistrationDriver.createInstance(registerer);
 		final ReportDriver reportDriver = ReportDriver.createInstance(Registerer.getInstance());
 		final MainDriver mainDriver = MainDriver.createInstance(eventStoreDriver, registrationDriver, reportDriver);
-		mainDriver.takeOver(null);
+		mainDriver.takeOver();
 	}
 
 }

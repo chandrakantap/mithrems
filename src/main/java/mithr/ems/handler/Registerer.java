@@ -8,6 +8,7 @@ import java.util.Map;
 
 import mithr.ems.driver.ReportDriver;
 import mithr.ems.handler.exception.NoSuchEventException;
+import mithr.ems.handler.exception.NoSuchRegistrationException;
 import mithr.ems.model.Participant;
 
 public class Registerer {
@@ -20,7 +21,7 @@ public class Registerer {
 
 	private Registerer() {
 	}
-	
+
 	public static Registerer createInstance(final EventStore eventStore) {
 		Registerer.INSTANCE = new Registerer();
 		Registerer.INSTANCE.eventStore = eventStore;
@@ -28,7 +29,7 @@ public class Registerer {
 	}
 
 	public static Registerer getInstance() {
-		if(Registerer.INSTANCE==null){
+		if (Registerer.INSTANCE == null) {
 			throw new IllegalStateException();
 		}
 		return Registerer.INSTANCE;
@@ -46,35 +47,36 @@ public class Registerer {
 		}
 	}
 
-	public void markAttendance(final String eventName, final Participant participant) throws NoSuchEventException {
-		if (eventStore.hasEvent(eventName)) {
-			List<Participant> participantForEvent = attendanceIndex.get(eventName);
-			if (participantForEvent == null) {
-				attendanceIndex.put(eventName, new ArrayList<Participant>());
-			}
-			attendanceIndex.get(eventName).add(participant);
-		} else {
+	public void markAttendance(final String eventName, final Participant participant)
+			throws NoSuchEventException, NoSuchRegistrationException {		
+		if (!eventStore.hasEvent(eventName)) {
 			throw new NoSuchEventException("There is no event exist named" + eventName);
 		}
+		if (registrationIndex.get(eventName) == null
+				|| !registrationIndex.get(eventName).contains(participant)) {
+			throw new NoSuchRegistrationException("User is not registered for the event");
+		}
+
+		List<Participant> attendeeForEvent = attendanceIndex.get(eventName);
+		if (attendeeForEvent == null) {
+			attendanceIndex.put(eventName, new ArrayList<Participant>());
+		}
+		attendanceIndex.get(eventName).add(participant);
+
 	}
 
-	public List<Participant> getParticipantList(final String eventName) {
-		
+	public List<Participant> getParticipantList(final String eventName) {		
 		if (registrationIndex.containsKey(eventName)) {
 			return Collections.unmodifiableList(registrationIndex.get(eventName));
 		}
 		return null;
 	}
 
-	public List<Participant> getAttendeeList(final String eventName) {
+	public List<Participant> getAttendeeList(final String eventName) {		
 		if (attendanceIndex.containsKey(eventName)) {
 			return Collections.unmodifiableList(attendanceIndex.get(eventName));
 		}
 		return null;
-	}
-
-	public void setEventStore(EventStore eventStore) {
-		this.eventStore = eventStore;
 	}
 
 }
