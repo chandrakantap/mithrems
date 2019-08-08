@@ -3,12 +3,6 @@ SPOCK testing framework for unit testing.
 Groovy and Java used when writing test script.
 
 Event name and participants name are not case-sensitive and will be converted tp uppercase upon creation
-I do no override equals and hashcode for Event model as it is not required yet.
- 
-
-
-
-I could not write test classes for Driver classes as it takes input from system and for time constraints.
 
 Q: How to compile?
 A: 1. extract the zip file in any folder (e.g. ~/codechallenge/cpal/)
@@ -20,5 +14,3 @@ A: 1. extract the zip file in any folder (e.g. ~/codechallenge/cpal/)
    
 Q: How to run?
 A: put the generated jar file (the one in ~/codechallenge/cpal/build/libs) in class path and run "java mithr.ems.Main"
-
-if you want to see the code in eclipse run "gradlew cleanEclipse eclipse" and import the project into workspace
